@@ -12,19 +12,19 @@ class Ngram:
         self.root = Node()
 
     def add(self, words, current_node):
-        print("Adding: {}".format(words))
+        # print("Adding: {}".format(words))
         for word in words:
             if not current_node.children:
-                print('Creating child')
+                # print('Creating child')
                 # print('{} : 1'.format(word))
                 current_node.children[word] = Node(1)
             else:
                 if current_node.children.get(word):
-                    print('Child already present')
+                    # print('Child already present')
                     current_node.children.get(word).count += 1
                     # print('{} : {}'.format(word, child.count))
                 else:
-                    print('Creating child')
+                    # print('Creating child')
                     # print('{} : 1'.format(word))
                     current_node.children[word] = Node(1)
             current_node = current_node.children.get(word)
@@ -38,11 +38,11 @@ class Ngram:
         :param words:
         :return:
         """
-        print('In last node')
-        print('Words' + str(words))
+        # print('In last node')
+        # print('Words' + str(words))
         for word in words:
-            for key, value in current_node.children.items():
-                print('{} : {}'.format(key, value.count))
+            # for key, value in current_node.children.items():
+            #     print('{} : {}'.format(key, value.count))
             child = current_node.children.get(word)
             if not child:
                 return None
@@ -58,13 +58,13 @@ class Ngram:
         :return:
         """
         # print('Word list: {}'.format(word_list))
-        print('Building {}-gram'.format(n))
+        print('Building {}-grams'.format(n))
         if len(word_list) >= n:
             for i in range(len(word_list)-n+1):
-                # print("i {}".format(i))
-                # print(word_list[i:i+n])
-                print('Word list sliced: {}'.format(word_list[i:i+n]))
+                # print('Word list sliced: {}'.format(word_list[i:i+n]))
                 self.add(word_list[i:i+n], self.root)
+        print('{}-grams built'.format(n))
+
 
     def get_count(self, word_list):
         last_node = self.find_last_node(word_list, self.root)

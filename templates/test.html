@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="block1">
+    <form action="/ngram_viewer" method="post">
+        Enter search terms(comma seperated): <input type="text" name="search_terms">&nbsp;&nbsp;
+        <input type="submit" value="Search">
+    </form>
+</div>
+
+
+{% endblock %}
