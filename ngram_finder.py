@@ -58,12 +58,12 @@ class Ngram:
         :return:
         """
         # print('Word list: {}'.format(word_list))
-        print('Building {}-grams'.format(n))
+        # print('Building {}-grams'.format(n))
         if len(word_list) >= n:
             for i in range(len(word_list)-n+1):
                 # print('Word list sliced: {}'.format(word_list[i:i+n]))
                 self.add(word_list[i:i+n], self.root)
-        print('{}-grams built'.format(n))
+        # print('{}-grams built'.format(n))
 
 
     def get_count(self, word_list):

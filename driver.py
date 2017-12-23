@@ -4,49 +4,30 @@ import os
 import pickle
 
 n_max = 5
-
-
+final_model = dict()
+labels=list()
 
 def tokenize_text(text):
     if not text or text == '':
         return None
     tokenized_words = [word.strip(string.punctuation) for word in text.split()]
-    # print(tokenized_words)
     return tokenized_words
 
 def read_text(folder_path):
     text_read = ""
     dir_paths = list()
-    # print('in read text')
-    # print(os.getcwd())
-    # print(folder_path)
     for dirpath, dir_list, file_list in os.walk(folder_path):
-        # print(dirpath)
-        # print(dir_list)
-        # print(file_list)
         for file_name in file_list:
             fname = os.path.join(dirpath, file_name)
-            # print(fname)
             with open(fname, encoding="utf8") as file:
                 text_read += file.read()
-        if dir_list and len(dir_list) > 0:
-            for dir_name in dir_list:
-                dir_path = os.path.join(dirpath, dir_name)
-                # print(dir_path)
-                dir_paths.append(dir_path)
-        # print(text_read)
-        return dir_paths, text_read
+        return text_read
 
 def create_all_ngrams(tokenized_words, ngram_list):
-    # print('Tokenized: {}'.format(tokenized_words))
     if not tokenized_words or len(tokenized_words) ==0:
         print("Pleas provide valid non empty text corpus")
     else:
-        # print('Max_n : {}'.format(n_max))
-        print('len(ngram_list) : {}'.format(len(ngram_list)))
         for i in range(n_max):
-            # print('index : {}'.format(i))
-            # print('n_max : {}'.format(n_max))
             ngram_list[i].build_ngram(i + 1, tokenized_words)
     return ngram_list
 
@@ -61,52 +42,49 @@ def get_frequency(text, total_words, ngram_list):
     n = len(tokenized_words)
     return ngram_list[n-1].get_count(tokenized_words)/(total_words-n+1)
 
-
-def traverse_dirs(folder_name, total_text):
-    # print(folder_name)
-    dir_list, file_text = read_text(folder_name)
-    total_text += " " +file_text
-    if dir_list and len(dir_list) > 0:
-        for dir in dir_list:
-            total_text = traverse_dirs(dir, total_text)
-    return total_text
-
-def run_model(folder_name='task'):
-    ngram_list = list()
+def run_model(folder_path='task'):
+    model = dict()
     total_text = ''
-    for i in range(n_max):
-        ngram = ng.Ngram()
-        ngram_list.append(ngram)
-    total_text = traverse_dirs(folder_name,'')
-    # print('Run model - len(ngram_list) : {}'.format(len(ngram_list)))
-    ngram_list, total_words = process_data(total_text, ngram_list)
-    # print('Words processed : {}'.format(total_words))
-    model ={
-        'total_words': total_words,
-        'ngram_list': ngram_list,
-    }
-    model_file_name = 'ngram_struct'
-    try:
-        with open(os.path.join(os.getcwd(), model_file_name), "wb") as f:
-            pickle.dump(model, f)
-    except Exception as e:
-        print("ERROR: Exception while trying to save model. " + str(e))
-    return(model)
-
-def load_model(model_file_name='ngram_struct'):
-    try:
-        with open(os.path.join('.', model_file_name), "rb") as f:
-            model = pickle.load(f)
-            return model
-    except Exception as e:
-        print('No Ngram structure saved....Creating Ngram structure')
-        run_model()
+    for dirpath, dir_list, file_list in os.walk(folder_path):
+        if dir_list and len(dir_list) > 0:
+            for dir_name in dir_list:
+                print('Building Ngrams for year {}'.format(dir_name))
+                dir_path = os.path.join(dirpath, dir_name)
+                ngram_list = list()
+                for i in range(n_max):
+                    ngram = ng.Ngram()
+                    ngram_list.append(ngram)
+                total_text = read_text(dir_path)
+                ngram_list, total_words = process_data(total_text, ngram_list)
+                model[dir_name]=dict()
+                labels.append(dir_name)
+                model[dir_name]['total_words'] = total_words
+                model[dir_name]['ngram_list'] = ngram_list
+                print('Words processed in {}: {}...Ngrams built'.format(dir_name, total_words))
+    global final_model
+    final_model = model
 
 def find_ngram_freq(check_text):
     print('Loading model')
-    model = load_model()
-    print('Model loaded....finding fequence')
-    return get_frequency(check_text, model.get('total_words'), model.get('ngram_list'))*100
+    if not final_model:
+        run_model()
+    print('Model loaded....finding fequency')
+    freq_year = dict()
+    for key, value in final_model.items():
+        freq_year[key] = round(get_frequency(check_text, value.get('total_words'), value.get('ngram_list')) * 100, 4)
+    return freq_year
+
+def find_ngram_freq_multiple(terms):
+    print('In find ngram freq mul terms')
+    terms = terms.split(',')
+    all_term_freq = list()
+    for term in terms:
+        term_freq = list()
+        for year,freq in find_ngram_freq(term).items():
+            term_freq.append(freq)
+        all_term_freq.append(term_freq)
+    return labels, all_term_freq
+
 
 if __name__ == "__main__":
     run_model(os.path.join(os.getcwd(), 'task'))

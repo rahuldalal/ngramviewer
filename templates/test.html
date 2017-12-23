@@ -1,12 +1,27 @@
-{% extends "layout.html" %}
-{% block body %}
+<html>
+<head>
+    <title>Ngram viewer</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: "Times New Roman", Times, serif;
+        }
 
-<div class="block1">
+        h1 {
+            font-family: "Times New Roman", Times, serif;
+            font-weight: normal;
+            color: #8ac640;
+            font-size: 2.5em;
+        }
+
+    </style>
+</head>
+<body>
+<div id='search_ip' class="block1">
     <form action="/ngram_viewer" method="post">
         Enter search terms(comma seperated): <input type="text" name="search_terms">&nbsp;&nbsp;
         <input type="submit" value="Search">
     </form>
 </div>
-
-
-{% endblock %}
+</body>
+</html>

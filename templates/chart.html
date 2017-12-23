@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8" />
+   <title>Chart.js </title>
+
+   <!-- import plugin script -->
+   <script src='static/Chart.min.js'></script>
+
+</head>
+<body>
+
+<h1>Flask Chart.js</h1>
+<!-- bar chart canvas element -->
+<canvas id="chart" width="600" height="400"></canvas>
+
+<script>
+
+lineChartData = {}; //declare an object
+lineChartData.labels = []; //add 'labels' element to object (X axis)
+lineChartData.datasets = []; //add 'datasets' array element to object
+
+   // bar chart data
+   var barData = {
+   labels : [{% for item in labels %}
+                  "{{item}}",
+              {% endfor %}],
+   datasets : [
+       {% for val in values %}
+      {
+          fill: false,
+          bezierCurve : false,
+          data : [{% for v in val %}
+                      "{{v}}",
+                    {% endfor %}]
+      },{% endfor %} ]
+   }
+
+   // get bar chart canvas
+   var mychart = document.getElementById("chart").getContext("2d");
+
+   steps = 10
+   max = 10
+   // draw bar chart
+    var colorNames = Object.keys(window.chartColors);
+   var LineChartDemo = new Chart(mychart).Line(barData, {
+        scaleOverride: true,
+        scaleSteps: steps,
+        scaleStepWidth: Math.ceil(max / steps),
+        scaleStartValue: 0,
+        scaleShowVerticalLines: true,
+        scaleShowGridLines : true,
+        barShowStroke : true,
+        scaleShowLabels: true,
+        bezierCurve: false,
+
+   });
+
+
+</script>
+
+</body>
+</html>
