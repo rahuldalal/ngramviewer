@@ -89,8 +89,6 @@ def find_ngram_freq_multiple(terms):
 if __name__ == "__main__":
     run_model(os.path.join(os.getcwd(), 'task'))
 
-# check_text = 'and'
-# print('{} : {}'.format(check_text,get_frequency(check_text, total_words, ngram_list[0], 1)))
 
 
 
